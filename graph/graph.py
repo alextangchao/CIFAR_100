@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
+import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.pyplot import MultipleLocator
 
 
 def load_data(path="./data.txt"):
@@ -9,31 +9,35 @@ def load_data(path="./data.txt"):
 
 
 data = load_data()
-x = range(1, int(data[0][0]) + 1)
+x = [i for i in range(1, int(data[0][0]) + 1)]
 y1, y2, y3 = [], [], []
 for i in data[1:]:
-    y1.append(i[0])
-    y2.append(i[1])
-    y3.append(i[2])
+    y1.append(float(i[0]))
+    y2.append(float(i[1]))
+    y3.append(float(i[2]))
 
 plt.figure(figsize=(18, 8))
-plt.figure(1)
-y_major_locator = MultipleLocator(len(x)//15)
 
-ax1 = plt.subplot(121)
+ax1 = plt.subplot(1, 2, 1)
+ax1.yaxis.set_ticks_position('right')
+plt.grid()
 plt.plot(x, y1)
 plt.xlabel("# of epoch")
 plt.ylabel("loss")
 plt.title("loss")
-ax1.yaxis.set_major_locator(y_major_locator)
+plt.ylim(0)
+plt.yticks(np.arange(0, 5,0.2 ))
 
-ax2 = plt.subplot(122)
+ax2 = plt.subplot(1, 2, 2)
+ax2.yaxis.set_ticks_position('right')
+plt.grid()
 plt.plot(x, y2, label='train')
 plt.plot(x, y3, label="test")
 plt.xlabel("# of epoch")
 plt.ylabel("accuracy")
 plt.title("accuracy")
-ax2.yaxis.set_major_locator(y_major_locator)
+plt.ylim(0)
+plt.yticks(np.arange(0, 101,5 ))
 
 plt.legend()
 plt.savefig("./analysis.jpg")
