@@ -18,7 +18,7 @@ for i in data[1:]:
 
 plt.figure(figsize=(18, 8))
 plt.figure(1)
-y_major_locator = MultipleLocator(3)
+y_major_locator = MultipleLocator(len(x)//15)
 
 ax1 = plt.subplot(121)
 plt.plot(x, y1)

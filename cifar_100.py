@@ -132,40 +132,40 @@ class Net(nn.Module):
         super(Net, self).__init__()
         # 3 input image channel, 6 output channels
         # 3x3 square convolution kernel
-        self.conv1 = nn.Conv2d(3, 23, 5)
-        self.conv2 = nn.Conv2d(23, 35, 5)
-        self.conv3 = nn.Conv2d(35, 56, 5)
+        self.conv1 = nn.Conv2d(3, 64, 3)
+        self.conv2 = nn.Conv2d(64, 128, 3)
+        self.conv3 = nn.Conv2d(128, 256, 3)
         self.pool = nn.MaxPool2d(2, 2)
         # an affine operation: y = Wx + b
-        self.fc1 = nn.Linear(56 * 4 * 4, 800)
-        self.fc2 = nn.Linear(800, 600)
-        self.fc3 = nn.Linear(600, 400)
-        self.fc4 = nn.Linear(400, 200)
-        self.fc5 = nn.Linear(200, 100)
-        self.relu = nn.ELU()
+        self.fc1 = nn.Linear(1024, 256)
+        self.fc2 = nn.Linear(256, 100)
+        # self.fc3 = nn.Linear(600, 400)
+        # self.fc4 = nn.Linear(400, 200)
+        # self.fc5 = nn.Linear(200, 100)
+        self.relu = nn.ReLU()
 
     def forward(self, x):
-        x = self.relu(self.conv1(x))
+        x = self.pool(self.relu(self.conv1(x)))
         x = self.pool(self.relu(self.conv2(x)))
         x = self.pool(self.relu(self.conv3(x)))
-        x = x.view(-1, 56 * 4 * 4)
+        x = x.view(-1, 1024)
         x = self.relu(self.fc1(x))
-        x = self.relu(self.fc2(x))
-        x = self.relu(self.fc3(x))
-        x = self.relu(self.fc4(x))
-        x = self.fc5(x)
+        # x = self.relu(self.fc2(x))
+        # x = self.relu(self.fc3(x))
+        # x = self.relu(self.fc4(x))
+        x = self.fc2(x)
         return x
 
 
 if __name__ == "__main__":
-    num_epochs = 50  # number of times which the entire dataset is passed throughout the model
-    batch_size = 50  # the size of input data took for one iteration
+    num_epochs = 200  # number of times which the entire dataset is passed throughout the model
+    batch_size = 128  # the size of input data took for one iteration
 
     transform = transforms.Compose(
-        [  # transforms.RandomCrop(32, padding=4),  # 先四周填充0，在吧图像随机裁剪成32*32
-            # transforms.RandomHorizontalFlip(),  # 图像一半的概率翻转，一半的概率不翻转
-            transforms.ToTensor(),
-            transforms.Normalize((0.5071, 0.4867, 0.4408), (0.2675, 0.2565, 0.2761))])
+        [transforms.RandomCrop(32, padding=4),  # 先四周填充0，在吧图像随机裁剪成32*32
+         transforms.RandomHorizontalFlip(),  # 图像一半的概率翻转，一半的概率不翻转
+         transforms.ToTensor(),
+         transforms.Normalize((0.5071, 0.4867, 0.4408), (0.2675, 0.2565, 0.2761))])
     trainset = torchvision.datasets.CIFAR100(root='./data', train=True,
                                              download=True, transform=transform)
     trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
@@ -188,6 +188,6 @@ if __name__ == "__main__":
 
     train("train test")
 
-    # train_correctness = check_correctness(trainloader)
-    # test_correctness = check_correctness(testloader)
+    train_correctness = check_correctness(trainloader)
+    test_correctness = check_correctness(testloader)
     # save_model()
