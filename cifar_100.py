@@ -29,7 +29,7 @@ def showpicture():
     # get some random training images
     dataiter = iter(trainloader)
     images, labels = dataiter.next()
-
+    # print(images)
     # show images
     imshow(torchvision.utils.make_grid(images))
     # print labels
@@ -48,10 +48,13 @@ def print_time(time):
 
 
 # Training the model
-def train():
+def train(text):
     print("Start training...")
     loss_function = nn.CrossEntropyLoss()
     optimizer = torch.optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
+    n = len(trainloader)
+    fout = open(".\\graph\\data.txt", "w")
+    fout.write(str(num_epochs) + " " + text + "\n")
     start = time.time()
     for epoch in range(num_epochs):
         running_loss = 0.0
@@ -72,12 +75,14 @@ def train():
 
             # print statistics
             running_loss += loss.item()
-            if i % 1000 == 999:  # print every 1000 mini-batches
-                print('[%d, %5d] loss: %.3f' %
-                      (epoch + 1, i + 1, running_loss / 1000))
-                running_loss = 0.0
+
+        print('[%d, %5d] loss: %.3f' % (epoch + 1, i + 1, running_loss / n))
+        train_correctness = check_correctness(trainloader)
+        test_correctness = check_correctness(testloader)
+        fout.write(str(running_loss / n) + " " + str(train_correctness) + " " + str(test_correctness) + "\n")
 
     end = time.time()
+    fout.close()
     print("Finished Training")
     print_time(end - start)
 
@@ -97,13 +102,14 @@ def check_correctness(loader):
             total += labels.size(0)
             correct += (predicted == labels).sum().item()
 
+    correctness = 100 * correct / total
+
     word = ""
     if loader == trainloader:
         word = "train"
     elif loader == testloader:
         word = "test"
-    correctness = 100 * correct / total
-    print('Accuracy of the network on the ' + word + ' images: %d %%' % (correctness))
+    print('Accuracy of the network on the ' + word + ' images: %d %%' % correctness)
     return correctness
 
 
@@ -152,31 +158,36 @@ class Net(nn.Module):
 
 
 if __name__ == "__main__":
-    num_epochs = 80  # number of times which the entire dataset is passed throughout the model
+    num_epochs = 50  # number of times which the entire dataset is passed throughout the model
     batch_size = 50  # the size of input data took for one iteration
 
     transform = transforms.Compose(
-        [transforms.ToTensor(),
-         transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
+        [  # transforms.RandomCrop(32, padding=4),  # 先四周填充0，在吧图像随机裁剪成32*32
+            # transforms.RandomHorizontalFlip(),  # 图像一半的概率翻转，一半的概率不翻转
+            transforms.ToTensor(),
+            transforms.Normalize((0.5071, 0.4867, 0.4408), (0.2675, 0.2565, 0.2761))])
     trainset = torchvision.datasets.CIFAR100(root='./data', train=True,
                                              download=True, transform=transform)
     trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
-                                              shuffle=True, num_workers=4)
+                                              shuffle=True, num_workers=2)
     testset = torchvision.datasets.CIFAR100(root='./data', train=False,
                                             download=True, transform=transform)
     testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size,
-                                             shuffle=False, num_workers=4)
+                                             shuffle=False, num_workers=2)
 
     device = torch.device("cuda: 0" if torch.cuda.is_available() else "cpu")
     print(device)
+
+    # showpicture()
+    # exit()
 
     net = Net()
     net = net.to(device)
 
     # load_model("D:\study\CIFAR_100\model\\25.67_76.534_1572670736.pkl")
 
-    train()
+    train("train test")
 
-    train_correctness = check_correctness(trainloader)
-    test_correctness = check_correctness(testloader)
-    save_model()
+    # train_correctness = check_correctness(trainloader)
+    # test_correctness = check_correctness(testloader)
+    # save_model()

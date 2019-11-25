@@ -1,4 +1,5 @@
 /.idea/*
 /data/*
+/model/*
 /test.py
 !.gitignore
