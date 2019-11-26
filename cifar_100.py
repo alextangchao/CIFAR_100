@@ -43,8 +43,8 @@ def print_time(time):
 # Training the model
 def train(text):
     print("Start training...")
-    loss_function = nn.CrossEntropyLoss()
-    optimizer = torch.optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
+    loss_function = nn.CrossEntropyLoss().to(device)
+    optimizer = torch.optim.SGD(net.parameters(), lr=0.001, momentum=0.9)  # , weight_decay=0.001)
     n = len(trainloader)
     fout = open(".\\graph\\data.txt", "w")
     fout.write(str(num_epochs) + " " + text + "\n")
@@ -151,7 +151,7 @@ class Net(nn.Module):
 
 
 if __name__ == "__main__":
-    num_epochs = 200  # number of times which the entire dataset is passed throughout the model
+    num_epochs = 400  # number of times which the entire dataset is passed throughout the model
     batch_size = 128  # the size of input data took for one iteration
 
     transform = transforms.Compose(
