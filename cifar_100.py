@@ -45,12 +45,14 @@ def print_time(time):
 def train(text):
     print("Start training...")
     loss_function = nn.CrossEntropyLoss().to(device)
-    optimizer = torch.optim.SGD(net.parameters(), lr=LR, momentum=0.9)  # , weight_decay=0.001)
+    optimizer = torch.optim.SGD(net.parameters(), lr=LR, momentum=0.9, weight_decay=5e-4)
     n = len(trainloader)
     fout = open(".\\graph\\data.txt", "w")
     fout.write(str(num_epochs) + " " + text + "\n")
+    best_accuracy = 0
     start = time.time()
     for epoch in range(num_epochs):
+        # net.train()
         running_loss = 0.0
         for i, data in enumerate(trainloader, 0):
             # get the inputs
@@ -70,15 +72,17 @@ def train(text):
             # print statistics
             running_loss += loss.item()
 
-        print('[%d, %5d] loss: %.3f' % (epoch + 1, i + 1, running_loss / n))
+        print('[%d, %d] loss: %.3f' % (epoch + 1, num_epochs, running_loss / n))
         train_correctness = check_correctness(trainloader)
         test_correctness = check_correctness(testloader)
+        best_accuracy = max(test_correctness, best_accuracy)
         fout.write(str(running_loss / n) + " " + str(train_correctness) + " " + str(test_correctness) + "\n")
 
     end = time.time()
     fout.close()
     print("Finished Training")
     print_time(end - start)
+    print("Best accuracy:", best_accuracy)
 
 
 def check_correctness(loader):
@@ -103,7 +107,7 @@ def check_correctness(loader):
         word = "train"
     elif loader == testloader:
         word = "test"
-    print('Accuracy of the network on the ' + word + ' images: %.3f %%' % correctness)
+    print('Accuracy of the network on the ' + word + ' images: %.2f %%' % correctness)
     return correctness
 
 
@@ -153,7 +157,7 @@ class Net(nn.Module):
 
 
 if __name__ == "__main__":
-    num_epochs = 300  # number of times which the entire dataset is passed throughout the model
+    num_epochs = 100  # number of times which the entire dataset is passed throughout the model
     batch_size = 128  # the size of input data took for one iteration
     LR = 0.001
 
