@@ -5,6 +5,7 @@ import torch
 import torchvision
 import torchvision.transforms as transforms
 import torch.nn as nn
+from resnet import ResNet18
 
 
 def showpicture():
@@ -44,7 +45,7 @@ def print_time(time):
 def train(text):
     print("Start training...")
     loss_function = nn.CrossEntropyLoss().to(device)
-    optimizer = torch.optim.SGD(net.parameters(), lr=0.001, momentum=0.9)  # , weight_decay=0.001)
+    optimizer = torch.optim.SGD(net.parameters(), lr=LR, momentum=0.9)  # , weight_decay=0.001)
     n = len(trainloader)
     fout = open(".\\graph\\data.txt", "w")
     fout.write(str(num_epochs) + " " + text + "\n")
@@ -102,13 +103,14 @@ def check_correctness(loader):
         word = "train"
     elif loader == testloader:
         word = "test"
-    print('Accuracy of the network on the ' + word + ' images: %d %%' % correctness)
+    print('Accuracy of the network on the ' + word + ' images: %.3f %%' % correctness)
     return correctness
 
 
 def save_model():
-    torch.save(net, "D:\study\CIFAR_100\model\\" + str(test_correctness) + "_" + str(train_correctness) + "_"
-               + str(int(time.time())) + ".pkl")
+    torch.save(net.state_dict(),
+               "D:\study\CIFAR_100\model\\" + str(test_correctness) + "_" + str(train_correctness) + "_" + str(
+                   int(time.time())) + ".pkl")
 
 
 def load_model(dir):
@@ -151,20 +153,26 @@ class Net(nn.Module):
 
 
 if __name__ == "__main__":
-    num_epochs = 400  # number of times which the entire dataset is passed throughout the model
+    num_epochs = 300  # number of times which the entire dataset is passed throughout the model
     batch_size = 128  # the size of input data took for one iteration
+    LR = 0.001
 
-    transform = transforms.Compose(
+    transform_train = transforms.Compose(
         [transforms.RandomCrop(32, padding=4),  # 先四周填充0，在吧图像随机裁剪成32*32
          transforms.RandomHorizontalFlip(),  # 图像一半的概率翻转，一半的概率不翻转
          transforms.ToTensor(),
          transforms.Normalize((0.5071, 0.4867, 0.4408), (0.2675, 0.2565, 0.2761))])
+
+    transform_test = transforms.Compose(
+        [transforms.ToTensor(),
+         transforms.Normalize((0.5071, 0.4867, 0.4408), (0.2675, 0.2565, 0.2761))])
+
     trainset = torchvision.datasets.CIFAR100(root='./data', train=True,
-                                             download=True, transform=transform)
+                                             download=True, transform=transform_train)
     trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
                                               shuffle=True, num_workers=2)
     testset = torchvision.datasets.CIFAR100(root='./data', train=False,
-                                            download=True, transform=transform)
+                                            download=True, transform=transform_test)
     testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size,
                                              shuffle=False, num_workers=2)
 
@@ -174,7 +182,7 @@ if __name__ == "__main__":
     # showpicture()
     # exit()
 
-    net = Net()
+    net = ResNet18()
     net = net.to(device)
 
     # load_model("D:\study\CIFAR_100\model\\25.67_76.534_1572670736.pkl")
@@ -183,4 +191,4 @@ if __name__ == "__main__":
 
     train_correctness = check_correctness(trainloader)
     test_correctness = check_correctness(testloader)
-    # save_model()
+    save_model()
