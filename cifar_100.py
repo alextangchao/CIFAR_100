@@ -187,7 +187,7 @@ if __name__ == "__main__":
     # exit()
 
     # net = ResNet18()
-    net = torchvision.models.resnet152(pretrained=False, progress=True)
+    net = torchvision.models.resnet18(pretrained=False, progress=True, num_classes=100)
     net = net.to(device)
 
     # load_model("D:\study\CIFAR_100\model\\25.67_76.534_1572670736.pkl")
@@ -196,4 +196,4 @@ if __name__ == "__main__":
 
     train_correctness = check_correctness(trainloader)
     test_correctness = check_correctness(testloader)
-    # save_model()
+    save_model()
