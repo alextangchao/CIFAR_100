@@ -138,9 +138,6 @@ class Net(nn.Module):
         # an affine operation: y = Wx + b
         self.fc1 = nn.Linear(1024, 256)
         self.fc2 = nn.Linear(256, 100)
-        # self.fc3 = nn.Linear(600, 400)
-        # self.fc4 = nn.Linear(400, 200)
-        # self.fc5 = nn.Linear(200, 100)
         self.relu = nn.ELU()
 
     def forward(self, x):
