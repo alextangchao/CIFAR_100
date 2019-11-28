@@ -157,7 +157,7 @@ class Net(nn.Module):
 
 
 if __name__ == "__main__":
-    num_epochs = 100  # number of times which the entire dataset is passed throughout the model
+    num_epochs = 400  # number of times which the entire dataset is passed throughout the model
     batch_size = 128  # the size of input data took for one iteration
     dropout_rate = 0.3
     LR = 0.001
