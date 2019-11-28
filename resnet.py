@@ -11,7 +11,7 @@ class ResidualBlock(nn.Module):
             nn.Conv2d(inchannel, outchannel, kernel_size=3, stride=stride, padding=1, bias=False),
             # nn.Dropout(dropout_rate),
             nn.BatchNorm2d(outchannel),
-            nn.ReLU(inplace=True),
+            nn.ELU(inplace=True),
             nn.Conv2d(outchannel, outchannel, kernel_size=3, stride=1, padding=1, bias=False),
             # nn.Dropout(dropout_rate),
             nn.BatchNorm2d(outchannel)
@@ -27,7 +27,7 @@ class ResidualBlock(nn.Module):
     def forward(self, x):
         out = self.left(x)
         out += self.shortcut(x)
-        out = F.relu(out)
+        out = F.Elu(out)
         return out
 
 
@@ -40,7 +40,7 @@ class ResNet(nn.Module):
             nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1, bias=False),
             # nn.Dropout(self.dropout_rate),
             nn.BatchNorm2d(64),
-            nn.ReLU()
+            nn.ELU()
         )
         self.layer1 = self.make_layer(ResidualBlock, 64, 2, stride=1)
         self.layer2 = self.make_layer(ResidualBlock, 128, 2, stride=2)
