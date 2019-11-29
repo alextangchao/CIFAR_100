@@ -30,12 +30,12 @@ def showpicture():
     # print(' '.join('%5s' % classes[labels[j]] for j in range(4)))
 
 
-def print_time(time):
+def print_time(time, title="Training time"):
     hour = time // 3600
     time %= 3600
     minute = time // 60
     time %= 60
-    print("Training time: ", end="")
+    print(title + ": ", end="")
     if hour > 0:
         print(str(int(hour)) + " hours ", end="")
     print(str(int(minute)) + " minutes " + str(int(time)) + " seconds")
@@ -54,7 +54,7 @@ def train(text):
     for epoch in range(num_epochs):
         net.train()
         if epoch == 1:
-            print_time(time.time() - start)
+            print_time(time.time() - start, "Epoch time")
         running_loss = 0.0
         for i, data in enumerate(trainloader, 0):
             # get the inputs
@@ -82,6 +82,7 @@ def train(text):
         fout.write(str(running_loss / n) + " " + str(train_correctness) + " " + str(test_correctness) + "\n")
 
     end = time.time()
+    fout.write("Best accuracy: " + str(best_accuracy) + "\n")
     fout.close()
     print("Finished Training")
     print_time(end - start)
@@ -160,9 +161,9 @@ class Net(nn.Module):
 
 
 if __name__ == "__main__":
-    num_epochs = 200  # number of times which the entire dataset is passed throughout the model
+    num_epochs = 300  # number of times which the entire dataset is passed throughout the model
     batch_size = 128  # the size of input data took for one iteration
-    dropout_rate = 0.3
+    dropout_rate = 0.5
     LR = 0.001
 
     transform_train = transforms.Compose(

@@ -11,7 +11,7 @@ def load_data(path="./data.txt"):
 data = load_data()
 x = [i for i in range(1, int(data[0][0]) + 1)]
 y1, y2, y3 = [], [], []
-for i in data[1:]:
+for i in data[1:int(data[0][0]) + 1]:
     y1.append(float(i[0]))
     y2.append(float(i[1]))
     y3.append(float(i[2]))
@@ -26,7 +26,7 @@ plt.xlabel("# of epoch")
 plt.ylabel("loss")
 plt.title("loss")
 plt.ylim(0)
-plt.yticks(np.arange(0, 5,0.2 ))
+plt.yticks(np.arange(0, 5, 0.2))
 
 ax2 = plt.subplot(1, 2, 2)
 ax2.yaxis.set_ticks_position('right')
@@ -37,7 +37,7 @@ plt.xlabel("# of epoch")
 plt.ylabel("accuracy")
 plt.title("accuracy")
 plt.ylim(0)
-plt.yticks(np.arange(0, 101,5 ))
+plt.yticks(np.arange(0, 101, 5))
 
 plt.legend()
 plt.savefig("./analysis.jpg")
