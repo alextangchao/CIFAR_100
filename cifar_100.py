@@ -41,6 +41,16 @@ def print_time(time, title="Training time"):
     print(str(int(minute)) + " minutes " + str(int(time)) + " seconds")
 
 
+def change_learning_rate(epoch, optimizer):
+    if epoch == 60:
+        optimizer = torch.optim.SGD(net.parameters(), lr=0.02, momentum=0.9, weight_decay=5e-4)
+    if epoch == 120:
+        optimizer = torch.optim.SGD(net.parameters(), lr=0.004, momentum=0.9, weight_decay=5e-4)
+    if epoch == 160:
+        optimizer = torch.optim.SGD(net.parameters(), lr=0.0008, momentum=0.9, weight_decay=5e-4)
+    return optimizer
+
+
 # Training the model
 def train(text):
     print("Start training...")
@@ -53,6 +63,7 @@ def train(text):
     start = time.time()
     for epoch in range(num_epochs):
         net.train()
+        optimizer = change_learning_rate(epoch, optimizer)
         if epoch == 1:
             print_time(time.time() - start, "Epoch time")
         running_loss = 0.0
@@ -161,10 +172,10 @@ class Net(nn.Module):
 
 
 if __name__ == "__main__":
-    num_epochs = 250  # number of times which the entire dataset is passed throughout the model
+    num_epochs = 300  # number of times which the entire dataset is passed throughout the model
     batch_size = 128  # the size of input data took for one iteration
-    dropout_rate = 0.5
-    LR = 0.001
+    dropout_rate = 0.3
+    LR = 0.1
 
     transform_train = transforms.Compose(
         [transforms.RandomCrop(32, padding=4),  # 先四周填充0，在吧图像随机裁剪成32*32
