@@ -52,7 +52,9 @@ def train(text):
     best_accuracy = 0
     start = time.time()
     for epoch in range(num_epochs):
-        # net.train()
+        net.train()
+        if epoch == 1:
+            print_time(time.time() - start)
         running_loss = 0.0
         for i, data in enumerate(trainloader, 0):
             # get the inputs
@@ -73,6 +75,7 @@ def train(text):
             running_loss += loss.item()
 
         print('[%d, %d] loss: %.3f' % (epoch + 1, num_epochs, running_loss / n))
+        net.eval()
         train_correctness = check_correctness(trainloader)
         test_correctness = check_correctness(testloader)
         best_accuracy = max(test_correctness, best_accuracy)
@@ -157,7 +160,7 @@ class Net(nn.Module):
 
 
 if __name__ == "__main__":
-    num_epochs = 400  # number of times which the entire dataset is passed throughout the model
+    num_epochs = 200  # number of times which the entire dataset is passed throughout the model
     batch_size = 128  # the size of input data took for one iteration
     dropout_rate = 0.3
     LR = 0.001
