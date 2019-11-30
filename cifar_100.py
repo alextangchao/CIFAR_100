@@ -43,11 +43,11 @@ def print_time(time, title="Training time"):
 
 def change_learning_rate(epoch, optimizer):
     if epoch == 60:
-        optimizer = torch.optim.SGD(net.parameters(), lr=0.02, momentum=0.9, weight_decay=5e-4)
-    if epoch == 120:
-        optimizer = torch.optim.SGD(net.parameters(), lr=0.004, momentum=0.9, weight_decay=5e-4)
-    if epoch == 160:
-        optimizer = torch.optim.SGD(net.parameters(), lr=0.0008, momentum=0.9, weight_decay=5e-4)
+        optimizer = torch.optim.SGD(net.parameters(), lr=0.01, momentum=0.9, weight_decay=5e-4)
+    if epoch == 150:
+        optimizer = torch.optim.SGD(net.parameters(), lr=0.001, momentum=0.9, weight_decay=5e-4)
+    if epoch == 250:
+        optimizer = torch.optim.SGD(net.parameters(), lr=0.0005, momentum=0.9, weight_decay=5e-4)
     return optimizer
 
 
