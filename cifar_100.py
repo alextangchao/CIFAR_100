@@ -5,7 +5,7 @@ import torch
 import torchvision
 import torchvision.transforms as transforms
 import torch.nn as nn
-from resnet import ResNet18
+from resnet import *
 
 
 def showpicture():
@@ -41,10 +41,13 @@ def print_time(time, title="Training time"):
     print(str(int(minute)) + " minutes " + str(int(time)) + " seconds")
 
 
+def estimate_training_time(epoch_time, num_epoch):
+    print_time(epoch_time, "Epoch time")
+    print_time(epoch_time * num_epoch, "Estimate training time")
+
+
 def change_learning_rate(epoch, optimizer):
-    if epoch == 60:
-        optimizer = torch.optim.SGD(net.parameters(), lr=0.01, momentum=0.9, weight_decay=5e-4)
-    if epoch == 150:
+    if epoch == 100:
         optimizer = torch.optim.SGD(net.parameters(), lr=0.001, momentum=0.9, weight_decay=5e-4)
     if epoch == 250:
         optimizer = torch.optim.SGD(net.parameters(), lr=0.0005, momentum=0.9, weight_decay=5e-4)
@@ -65,7 +68,7 @@ def train(text):
         net.train()
         optimizer = change_learning_rate(epoch, optimizer)
         if epoch == 1:
-            print_time(time.time() - start, "Epoch time")
+            estimate_training_time(time.time() - start, num_epochs)
         running_loss = 0.0
         for i, data in enumerate(trainloader, 0):
             # get the inputs
@@ -140,42 +143,11 @@ def load_model(dir):
     exit()
 
 
-# Define model class
-class Net(nn.Module):
-    def __init__(self):
-        super(Net, self).__init__()
-        # 3 input image channel, 6 output channels
-        # 3x3 square convolution kernel
-        self.conv1 = nn.Conv2d(3, 64, 3)
-        self.conv2 = nn.Conv2d(64, 128, 3)
-        self.conv3 = nn.Conv2d(128, 256, 3)
-        self.pool = nn.MaxPool2d(2, 2)
-        # an affine operation: y = Wx + b
-        self.fc1 = nn.Linear(1024, 256)
-        self.fc2 = nn.Linear(256, 100)
-        # self.fc3 = nn.Linear(600, 400)
-        # self.fc4 = nn.Linear(400, 200)
-        # self.fc5 = nn.Linear(200, 100)
-        self.relu = nn.ELU()
-
-    def forward(self, x):
-        x = self.pool(self.relu(self.conv1(x)))
-        x = self.pool(self.relu(self.conv2(x)))
-        x = self.pool(self.relu(self.conv3(x)))
-        x = x.view(-1, 1024)
-        x = self.relu(self.fc1(x))
-        # x = self.relu(self.fc2(x))
-        # x = self.relu(self.fc3(x))
-        # x = self.relu(self.fc4(x))
-        x = self.fc2(x)
-        return x
-
-
 if __name__ == "__main__":
-    num_epochs = 350  # number of times which the entire dataset is passed throughout the model
+    num_epochs = 300  # number of times which the entire dataset is passed throughout the model
     batch_size = 128  # the size of input data took for one iteration
-    dropout_rate = 0.3
-    LR = 0.1
+    dropout_rate = 0.5
+    LR = 0.01
 
     transform_train = transforms.Compose(
         [transforms.RandomCrop(32, padding=4),  # 先四周填充0，在吧图像随机裁剪成32*32
@@ -202,7 +174,7 @@ if __name__ == "__main__":
     # showpicture()
     # exit()
 
-    net = ResNet18(dropout_rate)
+    net = ResNet34(dropout_rate)
     # net = torchvision.models.resnet18(pretrained=False, progress=True)
     # net.fc = nn.Linear(net.fc.in_features, 100)
     net = net.to(device)

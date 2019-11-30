@@ -32,7 +32,7 @@ class ResidualBlock(nn.Module):
 
 
 class ResNet(nn.Module):
-    def __init__(self, ResidualBlock, dropout_rate, num_classes=100):
+    def __init__(self, ResidualBlock, dropout_rate, blocks, num_classes=100):
         super(ResNet, self).__init__()
         self.inchannel = 64
         self.dropout_rate = dropout_rate
@@ -42,10 +42,10 @@ class ResNet(nn.Module):
             nn.BatchNorm2d(64),
             nn.ELU()
         )
-        self.layer1 = self.make_layer(ResidualBlock, 64, 2, stride=1)
-        self.layer2 = self.make_layer(ResidualBlock, 128, 2, stride=2)
-        self.layer3 = self.make_layer(ResidualBlock, 256, 2, stride=2)
-        self.layer4 = self.make_layer(ResidualBlock, 512, 2, stride=2)
+        self.layer1 = self.make_layer(ResidualBlock, 64, blocks[0], stride=1)
+        self.layer2 = self.make_layer(ResidualBlock, 128, blocks[1], stride=2)
+        self.layer3 = self.make_layer(ResidualBlock, 256, blocks[2], stride=2)
+        self.layer4 = self.make_layer(ResidualBlock, 512, blocks[3], stride=2)
         self.fc = nn.Sequential(
             nn.Dropout(self.dropout_rate),
             nn.Linear(512, num_classes)
@@ -72,4 +72,8 @@ class ResNet(nn.Module):
 
 
 def ResNet18(dropout_rate):
-    return ResNet(ResidualBlock, dropout_rate)
+    return ResNet(ResidualBlock, dropout_rate, [2, 2, 2, 2])
+
+
+def ResNet34(dropout_rate):
+    return ResNet(ResidualBlock, dropout_rate, [3, 4, 6, 3])
