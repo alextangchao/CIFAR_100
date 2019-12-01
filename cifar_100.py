@@ -47,9 +47,9 @@ def estimate_training_time(epoch_time, num_epoch):
 
 
 def change_learning_rate(epoch, optimizer):
-    if epoch == 100:
+    if epoch == 50:
         optimizer = torch.optim.SGD(net.parameters(), lr=0.001, momentum=0.9, weight_decay=5e-4)
-    if epoch == 250:
+    if epoch == 160:
         optimizer = torch.optim.SGD(net.parameters(), lr=0.0005, momentum=0.9, weight_decay=5e-4)
     return optimizer
 
@@ -144,7 +144,7 @@ def load_model(dir):
 
 
 if __name__ == "__main__":
-    num_epochs = 300  # number of times which the entire dataset is passed throughout the model
+    num_epochs = 200  # number of times which the entire dataset is passed throughout the model
     batch_size = 128  # the size of input data took for one iteration
     dropout_rate = 0.5
     LR = 0.01
