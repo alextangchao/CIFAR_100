@@ -8,28 +8,6 @@ import torch.nn as nn
 from resnet import *
 
 
-def showpicture():
-    # @title show the picture
-    import matplotlib.pyplot as plt
-    import numpy as np
-
-    # functions to show an image
-
-    def imshow(img):
-        img = img / 2 + 0.5  # unnormalize
-        npimg = img.numpy()
-        plt.imshow(np.transpose(npimg, (1, 2, 0)))
-
-    # get some random training images
-    dataiter = iter(trainloader)
-    images, labels = dataiter.next()
-    # print(images)
-    # show images
-    imshow(torchvision.utils.make_grid(images))
-    # print labels
-    # print(' '.join('%5s' % classes[labels[j]] for j in range(4)))
-
-
 def print_time(time, title="Training time"):
     hour = time // 3600
     time %= 3600
@@ -66,7 +44,7 @@ def train(text):
     start = time.time()
     for epoch in range(num_epochs):
         net.train()
-        optimizer = change_learning_rate(epoch, optimizer)
+        # optimizer = change_learning_rate(epoch, optimizer)
         if epoch == 1:
             estimate_training_time(time.time() - start, num_epochs)
         running_loss = 0.0
@@ -147,7 +125,7 @@ if __name__ == "__main__":
     num_epochs = 200  # number of times which the entire dataset is passed throughout the model
     batch_size = 128  # the size of input data took for one iteration
     dropout_rate = 0.5
-    LR = 0.01
+    LR = 0.001
 
     transform_train = transforms.Compose(
         [transforms.RandomCrop(32, padding=4),  # 先四周填充0，在吧图像随机裁剪成32*32
@@ -171,12 +149,7 @@ if __name__ == "__main__":
     device = torch.device("cuda: 0" if torch.cuda.is_available() else "cpu")
     print(device)
 
-    # showpicture()
-    # exit()
-
     net = ResNet34(dropout_rate)
-    # net = torchvision.models.resnet18(pretrained=False, progress=True)
-    # net.fc = nn.Linear(net.fc.in_features, 100)
     net = net.to(device)
 
     # load_model("D:\study\CIFAR_100\model\\25.67_76.534_1572670736.pkl")
